@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>jsPlumb Toolkit - build Flowcharts</title>
+    <link rel="stylesheet" href="./asserts/css/jsplumbtoolkit-defaults.css">
+    <link rel="stylesheet" href="./asserts/css/jsplumbtoolkit-demo.css">
+    <link rel="stylesheet" href="./asserts/css/app.css">
+</head>
+
+<body class="jtk-bootstrap jtk-bootstrap-wide">
+
+<div class="jtk-page-container">
+    <div class="jtk-container">
+        <script type="jtk" id="tmplStart">
+            <div style="left:${left}px;top:${top}px;width:${w}px;height:${h}px;" class="flowchart-object flowchart-start">
+                <div style="position:relative">
+                    <svg:svg width="${w}" height="${h}">
+                        <svg:ellipse cx="${w/2}" cy="${h/2}" rx="${w/2}" ry="${h/2}" class="outer"/>
+                        <svg:ellipse cx="${w/2}" cy="${h/2}" rx="${(w/2) - 10}" ry="${(h/2) - 10}" class="inner"/>
+                        <svg:text text-anchor="middle" x="${ w / 2 }" y="${ h / 2 }" dominant-baseline="central">${text}</svg:text>
+                    </svg:svg>
+                </div>
+                <jtk-source port-type="start" filter=".outer" filter-negate="true"/>
+            </div>
+
+        </script>
+
+        <script type="jtk" id="tmplAction">
+            <div style="left:${left}px;top:${top}px;width:${w}px;height:${h}px;" class="flowchart-object flowchart-action">
+                <div style="position:relative">
+                    <div class="node-edit node-action">
+                        <i class="fa fa-pencil-square-o"/>
+                    </div>
+                    <div class="node-delete node-action">
+                        <i class="fa fa-times"/>
+                    </div>
+                    <svg:svg width="${w}" height="${h}">
+                        <svg:rect x="0" y="0" width="${w}" height="${h}" class="outer drag-start"/>
+                        <svg:rect x="10" y="10" width="${w-20}" height="${h-20}" class="inner"/>
+                        <svg:text text-anchor="middle" x="${w/2}" y="${h/2}" dominant-baseline="central">${text}</svg:text>
+                    </svg:svg>
+                </div>
+                <jtk-target port-type="target"/>
+                <jtk-source port-type="source" filter=".outer"/>
+            </div>
+
+        </script>
+
+        <script type="jtk" id="tmplQuestion">
+            <div style="left:${left}px;top:${top}px;width:${w}px;height:${h}px;" class="flowchart-object flowchart-question">
+                <div style="position:relative">
+                    <div class="node-edit node-action">
+                        <i class="fa fa-pencil-square-o"/>
+                    </div>
+                    <div class="node-delete node-action">
+                        <i class="fa fa-times"/>
+                    </div>
+                    <svg:svg width="${w}" height="${h}">
+                        <svg:path d="M ${w/2} 0 L ${w} ${h/2} L ${w/2} ${h} L 0 ${h/2} Z" class="outer"/>
+                        <svg:path d="M ${w/2} 10 L ${w-10} ${h/2} L ${w/2} ${h-10} L 10 ${h/2} Z" class="inner"/>
+                        <svg:text text-anchor="middle" x="${w/2}" y="${h/2}" dominant-baseline="central">${text}</svg:text>
+                    </svg:svg>
+                </div>
+                <jtk-source port-type="source" filter=".outer"/>
+                <jtk-target port-type="target"/>
+            </div>
+        </script>
+
+        <script type="jtk" id="tmplOutput">
+            <div style="left:${left}px;top:${top}px;width:${w}px;height:${h}px;" class="flowchart-object flowchart-output">
+                <div style="position:relative">
+                    <div class="node-edit node-action">
+                        <i class="fa fa-pencil-square-o"/>
+                    </div>
+                    <div class="node-delete node-action">
+                        <i class="fa fa-times"/>
+                    </div>
+                    <svg:svg width="${w}" height="${h}">
+                        <svg:rect x="0" y="0" width="${w}" height="${h}"/>
+                        <svg:text text-anchor="middle" x="${w/2}" y="${h/2}" dominant-baseline="central">${text}</svg:text>
+                    </svg:svg>
+                </div>
+                <jtk-target port-type="target"/>
+            </div>
+        </script>
+
+        <!-- edit text (question or action or output or edge label) -->
+        <script type="jtk" class="dlg" id="dlgText" title="Enter Text">
+            <input type="text" size="50" jtk-focus jtk-att="text" value="${text}" jtk-commit="true"/>
+        </script>
+
+        <script type="jtk" class="dlg" id="dlgConfirm" title="Please Confirm">
+            ${msg}?
+        </script>
+
+        <script type="jtk" class="dlg" id="dlgMessage" title="Message" cancel="false">
+            ${msg}
+        </script>
+
+
+        <div class="jtk-demo-main" id="jtk-demo-flowchart">
+
+            <!-- the node palette -->
+            <div class="sidebar node-palette">
+                <ul>
+                    <li jtk-node-type="question" title="Drag to add new">
+                        <i class="icon-tablet"></i>Question
+                    </li>
+                    <li jtk-node-type="action" title="Drag to add new">
+                        <i class="icon-eye-open"></i>Action
+                    </li>
+                    <li jtk-node-type="output" title="Drag to add new">
+                        <i class="icon-eye-open"></i>Output
+                    </li>
+                </ul>
+            </div>
+
+            <!-- this is the main drawing area -->
+            <div class="jtk-demo-canvas">
+                <!-- controls -->
+                <div class="controls">
+                    <i class="fa fa-arrows selected-mode" mode="pan" title="Pan Mode">拖拽</i>
+                    <i class="fa fa-pencil" mode="select" title="Select Mode">编辑</i>
+                    <i class="fa fa-home" reset title="Zoom To Fit">复位</i>
+                </div>
+                <!-- miniview -->
+                <div class="miniview"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /content -->
+<script src="./asserts/js/jsplumbtoolkit.js"></script>
+<!-- demo -->
+<script src="./asserts/js/app.js"></script>
+<!-- /demo -->
+
+</body>
+
+</html>
